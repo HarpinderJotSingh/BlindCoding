@@ -1,37 +1,37 @@
 // var request = require('request');
 
-$(document).ready(function() {
-	var inp = document.getElementsByClassName('noselect')[0];
-getQuestion(0);
-inp.addEventListener('select', function() {
-  this.selectionStart = this.selectionEnd;
-}, false);
-	
-	document.addEventListener('contextmenu', event => event.preventDefault());
-    var ctrlDown = false,
-        ctrlKey = 17,
-        cmdKey = 91,
-        vKey = 86,
-        cKey = 67;
+$(document).ready(function () {
+  var inp = document.getElementsByClassName('noselect')[0];
+  getQuestion(0);
+  inp.addEventListener('select', function () {
+    this.selectionStart = this.selectionEnd;
+  }, false);
 
-    $(document).keydown(function(e) {
-        if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = true;
-    }).keyup(function(e) {
-        if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = false;
-    });
+  document.addEventListener('contextmenu', event => event.preventDefault());
+  var ctrlDown = false,
+    ctrlKey = 17,
+    cmdKey = 91,
+    vKey = 86,
+    cKey = 67;
 
-    $(".no-copy-paste").keydown(function(e) {
-        if (ctrlDown && (e.keyCode == vKey || e.keyCode == cKey)) return false;
-    });
-    
-    // Document Ctrl + C/V 
-    $(document).keydown(function(e) {
-        if (ctrlDown && (e.keyCode == cKey)) console.log("Document catch Ctrl+C");
-        if (ctrlDown && (e.keyCode == vKey)) console.log("Document catch Ctrl+V");
-    });
+  $(document).keydown(function (e) {
+    if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = true;
+  }).keyup(function (e) {
+    if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = false;
+  });
 
-  let i = 0;  
-  $('.leaderboard-icon').click(function() {
+  $(".no-copy-paste").keydown(function (e) {
+    if (ctrlDown && (e.keyCode == vKey || e.keyCode == cKey)) return false;
+  });
+
+  // Document Ctrl + C/V 
+  $(document).keydown(function (e) {
+    if (ctrlDown && (e.keyCode == cKey)) console.log("Document catch Ctrl+C");
+    if (ctrlDown && (e.keyCode == vKey)) console.log("Document catch Ctrl+V");
+  });
+
+  let i = 0;
+  $('.leaderboard-icon').click(function () {
     $('.leaderboard').fadeToggle();
     if (i === 0) {
       $('.li').html('cancel');
@@ -44,9 +44,9 @@ inp.addEventListener('select', function() {
     }
   })
 });
-const languages = ['c','java','cpp','cpp14','python2','python3'];
+const languages = ['c', 'java', 'cpp', 'cpp14', 'python2', 'python3'];
 
-const versions = ['0','1','2'];
+const versions = ['0', '1', '2'];
 
 var code = `
 #include <stdio.h>
@@ -59,12 +59,12 @@ let langNo = 0;
 let versionNo = 0;
 let input = '1';
 let output = '';
-let qNo=0;
+let qNo = 0;
 let tc1 = '';
 let tc2 = '';
 let tc3 = '';
 
-const setCode = (prog)=>{
+const setCode = (prog) => {
   code = prog;
 };
 
@@ -90,16 +90,16 @@ const getVersion = () => {
   return versions[versionNo];
 }
 
-const setCustomInput = (inp)=>{
+const setCustomInput = (inp) => {
   input = inp;
 }
 
-const getCustomInput = ()=>{
+const getCustomInput = () => {
   return input;
 }
 
 const setOutput = (outp) => {
-  console.log('Result:',outp);
+  console.log('Result:', outp);
   output = outp;
 };
 
@@ -109,31 +109,31 @@ const getOutput = () => {
 
 const runCode = () => {
   stopClock();
-	console.log('time elapsed is: ',start);
+  console.log('time elapsed is: ', start);
   let prog = document.getElementById("codeInput").value;
   setCode(prog);
 
   let lang = document.getElementById("langSelect").value;
   setLanguage(lang);
 
-  console.log('Language: ',getLanguage(),'code: ',getCode());
+  console.log('Language: ', getLanguage(), 'code: ', getCode());
 
 
   var program = {
-      script : getCode(),
-      language: getLanguage(),
-      versionIndex: getVersion(),
-      clientId: "222a2ef84f6881409d32ae21369d1a32",
-   	  clientSecret:"67872757630a355db890ee74b6b20926cb9e025dbb444182df2bd2700fc64af1",
-      stdin: getCustomInput(), //to give custom input
-	  qNo: getQNum(),
-	  timeElapsed: start
+    script: getCode(),
+    language: getLanguage(),
+    versionIndex: getVersion(),
+    clientId: "222a2ef84f6881409d32ae21369d1a32",
+    clientSecret: "67872757630a355db890ee74b6b20926cb9e025dbb444182df2bd2700fc64af1",
+    stdin: getCustomInput(), //to give custom input
+    qNo: getQNum(),
+    timeElapsed: start
   };
 
   //just send this object to jdoodle url and send back the response
   // for all test cases backend checks the output and returns no of test cases cleared
-  let resp = sendRequest('POST','runCode/',program);
-	
+  let resp = sendRequest('POST', 'runCode/', program);
+
 
 };
 
@@ -143,51 +143,50 @@ function getCookie(name) {
 }
 
 
-const sendRequest = (method,url,data) => {   
- var csrf_token = getCookie('csrftoken');
+const sendRequest = (method, url, data) => {
+  var csrf_token = getCookie('csrftoken');
   var ourRequest = new XMLHttpRequest();
-  ourRequest.open(method,url, true);
+  ourRequest.open(method, url, true);
   ourRequest.setRequestHeader("Content-type", "application/json");
   ourRequest.setRequestHeader("X-CSRFToken", csrf_token);
-  ourRequest.onload = function() {
+  ourRequest.onload = function () {
     if (ourRequest.status >= 200 && ourRequest.status < 400) {
-		if(url == 'runCode/'){
-		  let recievedData = JSON.parse(ourRequest.responseText);
-		  setOutput(recievedData);
-		  document.getElementById("compilerOutput").value = getOutput().output;
-		  document.getElementById('score').innerHTML = recievedData['score'];
-		  console.log(recievedData['score']);
-		  if(getOutput().output == 'Correct Answer')
-			  start = 0;
-//		  startClock();
-		  return recievedData;
-		}
-		else{
-			let recievedData = JSON.parse(ourRequest.responseText);
-			let inpt = recievedData['sampIn'].split(' ');
-			let inStr = '';
-			for(let i=0;i<inpt.length;i++)
-			{
-				inStr+=inpt[i];
-				inStr+='\n';
-			}
-			let que = recievedData['question'] + '<br><br>'+'Sample Input'+'<br>'+recievedData['sampTCNum']+'<br>'+inStr+'<br><br>'+'Sample Output'+'<br>'+recievedData['sampleOut'];
-			console.log('hi ',recievedData);
-  			document.getElementsByClassName('left')[0].innerHTML=que;
-			qNo = recievedData['qNo'];
-			console.log(qNo);
-			console.log(recievedData['userScore']);
-			document.getElementById('score').innerHTML = recievedData['userScore'];
-			return recievedData;
-		}
+      if (url == 'runCode/') {
+        let recievedData = JSON.parse(ourRequest.responseText);
+        setOutput(recievedData);
+        document.getElementById("compilerOutput").value = getOutput().output;
+        document.getElementById('score').innerHTML = recievedData['score'];
+        console.log(recievedData['score']);
+        if (getOutput().output == 'Correct Answer')
+          start = 0;
+        startClock();
+        return recievedData;
+      }
+      else {
+        let recievedData = JSON.parse(ourRequest.responseText);
+        let inpt = recievedData['sampIn'].split(' ');
+        let inStr = '';
+        for (let i = 0; i < inpt.length; i++) {
+          inStr += inpt[i];
+          inStr += '\n';
+        }
+        let que = recievedData['question'] + '<br><br>' + 'Sample Input' + '<br>' + recievedData['sampTCNum'] + '<br>' + inStr + '<br><br>' + 'Sample Output' + '<br>' + recievedData['sampleOut'];
+        console.log('hi ', recievedData);
+        document.getElementsByClassName('left')[0].innerHTML = que;
+        qNo = recievedData['qNo'];
+        console.log(qNo);
+        console.log(recievedData['userScore']);
+        document.getElementById('score').innerHTML = recievedData['userScore'];
+        return recievedData;
+      }
     } else {
       // Nothing
-		// startClock();
+      startClock();
     }
   }
-  ourRequest.onerror = function() {
+  ourRequest.onerror = function () {
     // Nothing
-//	  startClock();
+    startClock();
   }
   console.log(JSON.stringify(data));
   ourRequest.send(JSON.stringify(data));
@@ -195,24 +194,24 @@ const sendRequest = (method,url,data) => {
 
 
 const getQuestion = (queNum) => {
-//  start = 0;
-  // startClock();
+  //  start = 0;
+  startClock();
   let data = {
-    queNum : queNum
+    queNum: queNum
   };
-  sendRequest('POST','/question/',data);
+  sendRequest('POST', '/question/', data);
 };
 
-function getQNum(){
-	return qNo;
+function getQNum() {
+  return qNo;
 }
 
-window.onresize = function(){
-    if ((window.outerHeight - window.innerHeight) > 100) {
-        // console was opened (or screen was resized)
-		alert("Sorry!! you will be logged out since you didn't follow instructions");
-		window.location.href="/logout"
-    }
+window.onresize = function () {
+  if ((window.outerHeight - window.innerHeight) > 100) {
+    // console was opened (or screen was resized)
+    alert("Sorry!! you will be logged out since you didn't follow instructions");
+    window.location.href = "/logout"
+  }
 }
 
 
@@ -235,77 +234,77 @@ function getCookie(name) {
 function login() {
   var csrf_token = getCookie('csrftoken');
   var ourRequest = new XMLHttpRequest();
-  ourRequest.open("POST","login/", true);
+  ourRequest.open("POST", "login/", true);
   ourRequest.setRequestHeader("X-CSRFToken", csrf_token);
   ourRequest.setRequestHeader("Content-type", "application/json");
-  ourRequest.onload = function() {
+  ourRequest.onload = function () {
     if (ourRequest.status >= 200 && ourRequest.status < 400) {
-		;
+      ;
     } else {
     }
   }
-  ourRequest.onerror = function() {
+  ourRequest.onerror = function () {
     // Nothing
   }
   ourRequest.send();
 }
 
 window.onload = () => {
-    // startClock();
+  startClock();
 }
 
 function showAbout() {
-    document.getElementsByClassName('about')[0].style.display = 'flex';
-    document.getElementsByClassName('backdrop')[0].style.display = 'block';
+  document.getElementsByClassName('about')[0].style.display = 'flex';
+  document.getElementsByClassName('backdrop')[0].style.display = 'block';
 }
 
 function closeAbout() {
-    document.getElementsByClassName('about')[0].style.display = 'none';
-    document.getElementsByClassName('backdrop')[0].style.display = 'none';
+  document.getElementsByClassName('about')[0].style.display = 'none';
+  document.getElementsByClassName('backdrop')[0].style.display = 'none';
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('select');
-	console.log('hikljhg');
-//    var instances = M.FormSelect.init(elems, options);
-  });
+document.addEventListener('DOMContentLoaded', function () {
+  var elems = document.querySelectorAll('select');
+  console.log('hikljhg');
+  //    var instances = M.FormSelect.init(elems, options);
+});
 
-  // Or with jQuery
+// Or with jQuery
 
-  $(document).ready(function(){
-    $('select').formSelect();
-  });
+$(document).ready(function () {
+  $('select').formSelect();
+});
 
-  $(document).delegate('#codeInput', 'keydown', function(e) {
-    var keyCode = e.keyCode || e.which;
-  
-    if (keyCode == 9) {
-      e.preventDefault();
-      var start = this.selectionStart;
-      var end = this.selectionEnd;
-  
-      // set textarea value to: text before caret + tab + text after caret
-      $(this).val($(this).val().substring(0, start)
-                  + "\t"
-                  + $(this).val().substring(end));
-  
-      // put caret at right position again
-      this.selectionStart =
+$(document).delegate('#codeInput', 'keydown', function (e) {
+  var keyCode = e.keyCode || e.which;
+
+  if (keyCode == 9) {
+    e.preventDefault();
+    var start = this.selectionStart;
+    var end = this.selectionEnd;
+
+    // set textarea value to: text before caret + tab + text after caret
+    $(this).val($(this).val().substring(0, start)
+      + "\t"
+      + $(this).val().substring(end));
+
+    // put caret at right position again
+    this.selectionStart =
       this.selectionEnd = start + 1;
-    }
-  });
+  }
+});
 
-  let hamburger = document.querySelector(".hamburger");
-  const title = document.querySelector('.title')
+let hamburger = document.querySelector(".hamburger");
+const title = document.querySelector('.title')
 
-hamburger.onclick = function(e){
+hamburger.onclick = function (e) {
   e.preventDefault;
-  if(hamburger.classList.contains("active")){
+  if (hamburger.classList.contains("active")) {
     hamburger.classList.remove("active");
     hamburger.style.transform = 'translateX(0)';
     document.getElementById('sidenav').style.transform = 'translateX(-100%)';
     title.style.left = 'calc(3vh + 50px)'
-  }else{
+  } else {
     hamburger.classList.add("active");
     hamburger.style.transform = 'translateX(21vw)';
     document.getElementById('sidenav').style.transform = 'translateX(0)';
@@ -314,12 +313,12 @@ hamburger.onclick = function(e){
 }
 
 // function Submit() {
-    
+
 // }
 
 // let start = 0;
 // let timerInterval;
-let timerCont = document.getElementById('timer');
+// let timerCont = document.getElementById('timer');
 // function increaseTime() 
 // function startClock() {
 //     timerInterval = setInterval(function() {
@@ -342,35 +341,59 @@ let timerCont = document.getElementById('timer');
 //     clearInterval(timerInterval);
 // }
 
-let s = 0, m = 0;
-function increaseTime() {
-  setInterval(function() {
-    if (s > 59){
-      s -= 60;
-      m += 1;
-    } 
+// let s = 0, m = 0;
+// function increaseTime() {
+//   setInterval(function() {
+//     if (s > 59){
+//       s -= 60;
+//       m += 1;
+//     } 
 
-    if (m < 10) {
-      if (s < 10) {
-        timerCont.innerHTML = '0' + m + ':0' + s;
-      }
-      else {
-        timerCont.innerHTML = '0' + m + ':' + s;
-      }
-    }
-    else {
-      if (s < 10) {
-        timerCont.innerHTML = m + ':0' + s;
-      }
-      else {
-        timerCont.innerHTML = + m + ':' + s;
-      }
-    }
+//     if (m < 10) {
+//       if (s < 10) {
+//         timerCont.innerHTML = '0' + m + ':0' + s;
+//       }
+//       else {
+//         timerCont.innerHTML = '0' + m + ':' + s;
+//       }
+//     }
+//     else {
+//       if (s < 10) {
+//         timerCont.innerHTML = m + ':0' + s;
+//       }
+//       else {
+//         timerCont.innerHTML = + m + ':' + s;
+//       }
+//     }
 
-    s++;
-  }, 1000)
+//     s++;
+//   }, 1000)
 
 
+// }
+
+// increaseTime()
+let s = 0;
+let m = 0;
+let ms = 0;
+let start = 0;
+let timer;
+function startClock() {
+  timer = setInterval(run, 20);
 }
-
-increaseTime()
+function run() {
+  document.getElementById("timer").innerHTML = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+  ms++;
+  if (ms == 100) {
+    ms = 0;
+    s++;
+  }
+  if (s == 60) {
+    s = 0;
+    m++
+  }
+  start = m * 60 + s;
+}
+function stopClock() {
+  clearInterval(timer);
+}
