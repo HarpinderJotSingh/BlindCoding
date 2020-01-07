@@ -137,7 +137,7 @@ function runCode(){
   // Pause, send time or store time
   // stopClock();
   pauseTime();
-
+  document.getElementsByClassName('btn')[0].disabled = true;
   console.log(`Time elapsed is: ${m} minutes and ${s} seconds`);
   
   // Get code entered by the user and store it
@@ -198,6 +198,7 @@ const sendRequest = (method, url, data) => {
 		  document.getElementById("compilerOutput").value = getOutput();
 		  document.getElementById('score').innerHTML = recievedData['score'];
 		  console.log(recievedData['score']);
+	          document.getElementsByClassName('btn')[0].disabled = false;
       if(getOutput() == 'Correct Answer')
       {
         s = 0;
